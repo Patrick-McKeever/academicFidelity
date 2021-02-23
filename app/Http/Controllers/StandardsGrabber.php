@@ -29,6 +29,7 @@ function makeStandardStruct($standardInp, &$standardOutp, $depth, $maximumDepth)
     $standardObjs = array(); //to be discarded once emerging from this level of recursion;
 
     //Make standards into instances of class.
+    //First we, catalog who each standard's ancestors are.
     foreach($standardInp['data']['standards'] as $standard) {
         if($standard['depth'] == $depth) {
             $standardObj = new standard();
@@ -43,11 +44,13 @@ function makeStandardStruct($standardInp, &$standardOutp, $depth, $maximumDepth)
     }
 
     //Recursive call.
+    //This will mean that, by the time the uppermost function call passes this point, all standards will have their ancestors listed.
     if($depth != $maximumDepth) {
         makeStandardStruct($standardInp, $standardObjs, $depth + 1, $maximumDepth);
     }
-
-    //At this point, we iterate through an array of standards who hierarchy is not yet obvious.
+    
+    
+    //Now that we have a data structure listing all standards and their ancestors, we make them into a tree.
     foreach($standardObjs as $standard) {
         if(! empty($standard->ancestorIds)) {
             //"parentIds" are those 1 level above current node; JSON structure lists any ancestors as ancestor Ids.
